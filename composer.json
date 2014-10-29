@@ -1,0 +1,22 @@
+{
+    "name": "scaytrase/symfony-switchable-theme",
+    "description": "Web-configurable forms",
+    "minimum-stability": "dev",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "Pavel Batanov",
+            "email": "pavel@batanov.me"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "symfony/symfony": "~2.4",
+        "scaytrase/symfony-autoregistry": "~1.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
+    }
+}

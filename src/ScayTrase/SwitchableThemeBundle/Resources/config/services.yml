@@ -1,0 +1,5 @@
+services:
+  scaytrase.theme_registry:
+    class:  ScayTrase\SwitchableThemeBundle\Service\ThemeRegistry
+    tags:
+    - {name: autoregistry, tag: theme }
