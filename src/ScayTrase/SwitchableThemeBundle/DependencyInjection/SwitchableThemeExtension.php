@@ -35,9 +35,6 @@ class SwitchableThemeExtension extends Extension implements PrependExtensionInte
      */
     public function prepend(ContainerBuilder $container)
     {
-        // get all bundles
-        $bundles = $container->getParameter('kernel.bundles');
-
         foreach ($container->getExtensions() as $name => $extension) {
             switch ($name) {
                 case 'twig':
