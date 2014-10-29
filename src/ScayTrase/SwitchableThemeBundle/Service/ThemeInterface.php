@@ -22,4 +22,4 @@ interface ThemeInterface extends RegistryElementInterface{
      * @return mixed[]
      */
     public function getOptions();
-} 
+}
