@@ -84,9 +84,9 @@ class GenerateCommand extends ContainerAwareCommand
                 return;
             }
 
-            $lessDir = $fs->makePathRelative(
-                dirname($theme->getOptions()['bootstrap_less_file']),
-                $theme->getOptions()['assets_dir']
+            $assets_dir = $fs->makePathRelative(
+                realpath($theme->getOptions()['assets_dir']),
+                realpath(dirname($theme->getOptions()['bootstrap_less_file']))
             );
 
             $variablesDir = $fs->makePathRelative(
@@ -106,7 +106,7 @@ class GenerateCommand extends ContainerAwareCommand
                 array(
                     'variables_dir' => $variablesDir,
                     'variables_file' => $variablesFile,
-                    'assets_dir' => $lessDir
+                    'assets_dir' => $assets_dir
                 )
             );
             file_put_contents($theme->getOptions()['bootstrap_less_file'], $content);
