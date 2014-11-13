@@ -9,6 +9,7 @@
 namespace ScayTrase\SwitchableThemeBundle\Command;
 
 use ScayTrase\SwitchableThemeBundle\Service\ThemeInterface;
+use ScayTrase\SwitchableThemeBundle\Service\ThemeRegistry;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -57,8 +58,10 @@ class GenerateCommand extends ContainerAwareCommand
 
     protected function executeGenerateBootstrap(InputInterface $input, OutputInterface $output)
     {
+        /** @var ThemeRegistry $theme_registry */
+        $theme_registry = $this->getContainer()->get('scaytrase.theme_registry');
         /** @var ThemeInterface[] $themes */
-        $themes = $this->getContainer()->get('scaytrase.theme_registry')->getThemes();
+        $themes = $theme_registry->all();
 
         foreach ($themes as $theme) {
 
