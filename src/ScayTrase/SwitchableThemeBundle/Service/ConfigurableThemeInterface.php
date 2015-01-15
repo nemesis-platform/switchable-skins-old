@@ -9,8 +9,10 @@
 namespace ScayTrase\SwitchableThemeBundle\Service;
 
 
-interface ConfigurableThemeInterface
+use ScayTrase\AutoRegistryBundle\Service\ConfigurableElementInterface;
+
+interface ConfigurableThemeInterface extends ConfigurableElementInterface
 {
-    public function buildTheme();
-    public function getOptions();
+    /** @return string */
+    public function getConfiguration();
 }

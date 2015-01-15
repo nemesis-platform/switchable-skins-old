@@ -8,8 +8,7 @@
 
 namespace ScayTrase\SwitchableThemeBundle\Entity;
 
+class ThemeInstance
+{
 
-class ThemeInstance {
-    private $id;
-    private $themeId;
 }

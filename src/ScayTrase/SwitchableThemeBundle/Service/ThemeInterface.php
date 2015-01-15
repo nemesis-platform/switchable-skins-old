@@ -11,15 +11,14 @@ namespace ScayTrase\SwitchableThemeBundle\Service;
 
 use ScayTrase\AutoRegistryBundle\Service\RegistryElementInterface;
 
-interface ThemeInterface extends RegistryElementInterface{
+interface ThemeInterface extends RegistryElementInterface
+{
     /**
      * @param string $layout
+     *
      * @return string
      */
-    public function getTemplate($layout = 'base');
-
-    /**
-     * @return mixed[]
-     */
-    public function getOptions();
+    public function get($layout = 'base');
+    /** @return string[] */
+    public function all();
 }

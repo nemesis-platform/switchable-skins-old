@@ -13,5 +13,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 interface CompilableThemeInterface
 {
+    /**
+     * @param ContainerInterface $container
+     *
+     * @return bool
+     */
     public function compile(ContainerInterface $container);
 }
