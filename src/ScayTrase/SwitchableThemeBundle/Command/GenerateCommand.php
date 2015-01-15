@@ -8,13 +8,13 @@
 
 namespace ScayTrase\SwitchableThemeBundle\Command;
 
+use Exception;
+use ScayTrase\SwitchableThemeBundle\Service\CompilableThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ThemeRegistry;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Exception\IOException;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * GenerateCommand
@@ -64,53 +64,21 @@ class GenerateCommand extends ContainerAwareCommand
         $themes = $theme_registry->all();
 
         foreach ($themes as $theme) {
-
-            // In the template for bootstrap.less we need the path where Bootstraps .less files are stored and the path
-            // to the variables.less file.
-            // Absolute path do not work in LESSs import statement, we have to calculate the relative ones
-
-            $fs = new Filesystem;
-
-            try {
-                $fs->mkdir(dirname($theme->getOptions()['bootstrap_less_file']));
-            } catch (IOException $e) {
-                $output->writeln(
-                    sprintf(
-                        '<error>Could not create directory %s.</error>',
-                        dirname($theme->getOptions()['bootstrap_less_file'])
-                    )
+            if ($theme instanceof CompilableThemeInterface) {
+                $output->write(
+                    sprintf('<comment>Generating theme <info>%s</info></comment>', $theme->getDescription())
                 );
+                try {
+                    $theme->compile($this->getContainer());
+                } catch (Exception $exception) {
+                    $output->writeln(' [<error>FAIL</error>]');
+                    $output->writeln(sprintf('<error>%s</error>', $exception->getTraceAsString()));
+                    continue;
+                }
 
-                return;
+                $output->writeln(' [<comment>DONE</comment>]');
             }
 
-            $assets_dir = $fs->makePathRelative(
-                realpath($theme->getOptions()['assets_dir']),
-                realpath(dirname($theme->getOptions()['bootstrap_less_file']))
-            );
-
-            $variablesDir = $fs->makePathRelative(
-                realpath(dirname($theme->getOptions()['variables_file'])),
-                realpath(dirname($theme->getOptions()['bootstrap_less_file']))
-            );
-
-            $variablesFile = sprintf(
-                '%s%s',
-                $variablesDir,
-                basename($theme->getOptions()['variables_file'])
-            );
-
-            // We can now use Twig to render the bootstrap.less file and save it
-            $content = $this->getContainer()->get('twig')->render(
-                $theme->getOptions()['bootstrap_template'],
-                array(
-                    'variables_dir' => $variablesDir,
-                    'variables_file' => $variablesFile,
-                    'assets_dir' => $assets_dir
-                )
-            );
-            file_put_contents($theme->getOptions()['bootstrap_less_file'], $content);
-            $output->writeln('Generating file ' . $theme->getOptions()['bootstrap_less_file']);
         }
     }
 }
