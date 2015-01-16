@@ -25,7 +25,7 @@ class ThemeRegistry implements RegistryInterface
             return null;
         }
 
-        return $this->themes[$type]->getTemplate($layout);
+        return $this->themes[$type]->get($layout);
 
     }
 
