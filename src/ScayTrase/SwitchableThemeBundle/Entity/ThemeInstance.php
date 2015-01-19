@@ -14,6 +14,34 @@ class ThemeInstance
     private $id;
     /** @var  array */
     private $config;
+    /** @var  string */
+    private $description;
+    /** @var  string */
+    private $theme;
+
+    /**
+     * @return string identifier for instance asset generation
+     */
+    public function getAssetsKey()
+    {
+        return $this->theme . '_i' . $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
 
     /**
      * @return string
@@ -30,8 +58,6 @@ class ThemeInstance
     {
         $this->theme = $theme;
     }
-    /** @var  string */
-    private $theme;
 
     /**
      * @return array

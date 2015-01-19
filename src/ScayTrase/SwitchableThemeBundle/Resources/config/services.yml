@@ -3,3 +3,9 @@ services:
     class:  ScayTrase\SwitchableThemeBundle\Service\ThemeRegistry
     tags:
     - {name: autoregistry, tag: theme }
+
+  scaytrase_switchablethemebundle.form.type.themeinstancetype:
+    class: ScayTrase\SwitchableThemeBundle\Form\Type\ThemeInstanceType
+    arguments: [ @scaytrase.theme_registry, @service_container ]
+    tags:
+    - { name: form.type, alias: switchable_theme_instance }

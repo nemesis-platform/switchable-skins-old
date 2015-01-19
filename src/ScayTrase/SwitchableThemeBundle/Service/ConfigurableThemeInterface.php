@@ -9,10 +9,24 @@
 namespace ScayTrase\SwitchableThemeBundle\Service;
 
 
-use ScayTrase\AutoRegistryBundle\Service\ConfigurableElementInterface;
+use Symfony\Component\Form\FormBuilderInterface;
 
-interface ConfigurableThemeInterface extends ConfigurableElementInterface
+/**
+ * Interface ConfigurableThemeInterface
+ *
+ * @package ScayTrase\SwitchableThemeBundle\Service
+ */
+interface ConfigurableThemeInterface
 {
     /** @return string */
-    public function getConfiguration();
+    public function getDefualtConfiguration();
+
+    /**
+     * @param array                $options
+     * @param mixed                $data
+     * @param FormBuilderInterface $builder
+     *
+     * @return FormBuilderInterface
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options = array());
 }

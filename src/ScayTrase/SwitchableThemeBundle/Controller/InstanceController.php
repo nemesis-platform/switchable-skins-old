@@ -10,9 +10,8 @@ namespace ScayTrase\SwitchableThemeBundle\Controller;
 
 
 use ScayTrase\SwitchableThemeBundle\Entity\ThemeInstance;
-use ScayTrase\SwitchableThemeBundle\Service\ConfigurableThemeInterface;
-use ScayTrase\SwitchableThemeBundle\Service\ThemeInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,44 +28,26 @@ class InstanceController extends Controller
     /**
      * @param Request $request
      * @Route("/create", name="switchable_theme_instance_create")
+     * @Template()
      *
      * @return Response
      */
     public function createAction(Request $request)
     {
-        $builder = $this->createFormBuilder();
+        $form = $this->createForm('switchable_theme_instance')->add('submit', 'submit');
 
-        $themes = $this->get('scaytrase.theme_registry')->all();
-
-
-        $choices = array_combine(
-            array_keys($themes),
-            array_map(
-                function (ThemeInterface $theme) {
-                    $theme->getDescription();
-                },
-                $themes
-            )
-        );
-
-        $builder->add('theme', 'choice', array('choices' => $choices));
-        $builder->add('submit', 'submit');
-
-        $form = $builder->getForm();
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $theme = $form->get('theme')->getData();
-
-            $instance = new ThemeInstance();
-            $instance->setTheme($theme);
+            /** @var ThemeInstance $instance */
+            $instance = $form->getData();
             $instance->setConfig(array());
 
             $this->getDoctrine()->getManager()->persist($instance);
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('switchable_theme_instance_list');
+            return $this->redirectToRoute('switchable_theme_instance_edit', array('instance' => $instance->getId()));
         }
 
         return array('form' => $form->createView());
@@ -75,9 +56,11 @@ class InstanceController extends Controller
     /**
      * @return Response
      * @Route("/list", name="switchable_theme_instance_list")
+     * @Template()
      */
     public function listAction()
     {
+        /** @var ThemeInstance[] $instances */
         $instances = $this
             ->getDoctrine()->getManager()->getRepository('SwitchableThemeBundle:ThemeInstance')->findAll();
 
@@ -88,6 +71,7 @@ class InstanceController extends Controller
      * @param ThemeInstance $instance
      *
      * @Route("/{instance}/delete", name="switchable_theme_instance_delete")
+     * @Template()
      * @return RedirectResponse
      */
     public function deleteAction(ThemeInstance $instance)
@@ -101,39 +85,29 @@ class InstanceController extends Controller
      * @param Request       $request
      * @param ThemeInstance $instance
      * @Route("/{instance}/edit", name="switchable_theme_instance_edit")
+     * @Template()
+     *
      * @return Response
      */
     public function editAction(Request $request, ThemeInstance $instance)
     {
-        $config = $instance->getConfig();
-
-        $theme = $this->get('scaytrase.theme_registry')->get($instance->getTheme());
-
-        if ($theme instanceof ConfigurableThemeInterface) {
-            $builder = $theme->getForm(array());
-            $builder->setData($config);
-        } else {
-            $builder = $this->createFormBuilder();
-        }
-        $builder->add('submit', 'submit');
-        $form = $builder->getForm();
+        $form = $this->createForm('switchable_theme_instance', $instance)
+            ->add('submit', 'submit');
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $config = $form->getData();
-            $instance->setConfig($config);
-
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('switchable_theme_instance_list');
+            return $this->redirectToRoute('switchable_theme_instance_edit', array('instance' => $instance->getId()));
         }
 
-        return array('form' => $form->createView());
+        return array('form' => $form->createView(), 'instance' => $instance);
     }
 
     /**
      * @param ThemeInstance $instance
      * @Route("/{instance}/clone", name="switchable_theme_instance_clone")
+     *
      * @return RedirectResponse
      */
     public function cloneAction(ThemeInstance $instance)
