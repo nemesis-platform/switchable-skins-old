@@ -18,12 +18,20 @@ use Symfony\Component\Form\FormBuilderInterface;
  */
 interface ConfigurableThemeInterface
 {
-    /** @return string */
-    public function getDefualtConfiguration();
+    /**
+     * @return mixed
+     */
+    public function getConfiguration();
+
+    /**
+     * @param $config
+     *
+     * @return mixed
+     */
+    public function setConfiguration($config);
 
     /**
      * @param array                $options
-     * @param mixed                $data
      * @param FormBuilderInterface $builder
      *
      * @return FormBuilderInterface
