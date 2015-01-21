@@ -11,6 +11,7 @@ namespace ScayTrase\SwitchableThemeBundle\Service;
 
 use ScayTrase\AutoRegistryBundle\Service\RegistryElementInterface;
 use ScayTrase\AutoRegistryBundle\Service\RegistryInterface;
+use ScayTrase\SwitchableThemeBundle\Entity\ThemeInstance;
 use Symfony\Component\DependencyInjection\Exception\LogicException;
 
 class ThemeRegistry implements RegistryInterface
@@ -19,13 +20,32 @@ class ThemeRegistry implements RegistryInterface
     /** @var  ThemeInterface[] */
     private $themes = array();
 
+    /**
+     * @param ThemeInstance|string $type
+     * @param string               $layout
+     *
+     * @return null|string
+     */
     public function getTemplate($type, $layout = 'base')
     {
+        $instance = null;
+
+        if ($type instanceof ThemeInstance){
+            $instance = $type;
+            $type = $instance->getTheme();
+        }
+
         if (!array_key_exists($type, $this->themes)) {
             return null;
         }
 
-        return $this->themes[$type]->get($layout);
+        $theme = $this->themes[$type];
+
+        if ($theme instanceof ConfigurableThemeInterface && $instance) {
+            $theme->setConfiguration($instance->getConfig());
+        }
+
+        return $theme->get($layout);
 
     }
 
@@ -37,6 +57,7 @@ class ThemeRegistry implements RegistryInterface
 
     /**
      * @param $key string
+     *
      * @return RegistryElementInterface
      */
     public function has($key)
@@ -46,6 +67,7 @@ class ThemeRegistry implements RegistryInterface
 
     /**
      * @param $key string
+     *
      * @return RegistryElementInterface
      */
     public function get($key)
