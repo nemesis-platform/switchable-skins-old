@@ -17,21 +17,21 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class ThemeInstanceType extends AbstractType
 {
     /** @var  ThemeRegistry */
     private $registry;
-    /** @var  ContainerInterface */
-    private $container;
+    /** @var  FormFactoryInterface */
+    private $factory;
 
-    function __construct(ThemeRegistry $registry, ContainerInterface $container)
+    function __construct(ThemeRegistry $registry, FormFactoryInterface $factory)
     {
         $this->registry = $registry;
-        $this->container = $container;
+        $this->factory = $factory;
     }
-
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -65,7 +65,8 @@ class ThemeInstanceType extends AbstractType
                     if ($theme instanceof ConfigurableThemeInterface) {
                         $form->add(
                             $theme->buildForm(
-                                $this->container->get('form.factory')->createNamedBuilder(
+
+                                $this->factory->createNamedBuilder(
                                     'config',
                                     'form',
                                     $instance->getConfig(),

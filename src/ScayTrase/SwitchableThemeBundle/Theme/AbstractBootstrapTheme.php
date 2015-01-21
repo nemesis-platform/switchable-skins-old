@@ -12,9 +12,18 @@ use ScayTrase\SwitchableThemeBundle\Service\CompilableThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ThemeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Twig_Environment;
 
 abstract class AbstractBootstrapTheme implements ThemeInterface, CompilableThemeInterface
 {
+    /** @var  Twig_Environment */
+    private $twig;
+
+    function __construct(Twig_Environment $twig)
+    {
+        $this->twig = $twig;
+    }
+
     abstract protected function getBootstrapLessFile();
 
     abstract protected function getVariablesFile();
@@ -24,11 +33,9 @@ abstract class AbstractBootstrapTheme implements ThemeInterface, CompilableTheme
     abstract protected function getBootstrapTemplate();
 
     /**
-     * @param ContainerInterface $container
-     *
      * @return bool
      */
-    public function compile(ContainerInterface $container)
+    public function compile()
     {
         $fs = new Filesystem;
         $fs->mkdir(dirname($this->getBootstrapLessFile()));
@@ -49,7 +56,7 @@ abstract class AbstractBootstrapTheme implements ThemeInterface, CompilableTheme
             basename($this->getVariablesFile())
         );
 
-        $content = $container->get('twig')->render(
+        $content = $this->twig->render(
             $this->getBootstrapTemplate(),
             array(
                 'variables_dir' => $variablesDir,
