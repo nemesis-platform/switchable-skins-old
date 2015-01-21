@@ -10,7 +10,6 @@ namespace ScayTrase\SwitchableThemeBundle\Theme;
 
 use ScayTrase\SwitchableThemeBundle\Service\CompilableThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ThemeInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Twig_Environment;
 

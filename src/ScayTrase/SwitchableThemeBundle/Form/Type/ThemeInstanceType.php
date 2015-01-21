@@ -12,7 +12,6 @@ use ScayTrase\SwitchableThemeBundle\Entity\ThemeInstance;
 use ScayTrase\SwitchableThemeBundle\Service\ConfigurableThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ThemeRegistry;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
@@ -35,7 +34,7 @@ class ThemeInstanceType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('description','text');
+        $builder->add('description', 'text');
 
         $builder->addEventListener(
             FormEvents::PRE_SET_DATA,
