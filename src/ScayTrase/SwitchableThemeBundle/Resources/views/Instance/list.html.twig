@@ -1,0 +1,29 @@
+{% extends 'SwitchableThemeBundle::base.html.twig' %}
+
+{% block body %}
+    <ul class="list-group">
+        {% for theme in themes %}
+            <li class="list-group-item">
+                <div class="pull-right">
+                    <a class="btn btn-default">
+                        <i class="fa fa-copy"></i>
+                    </a>
+                    <a class="btn btn-primary">
+                        <i class="fa fa-edit"></i>
+                    </a>
+                    <a class="btn btn-danger">
+                        <i class="fa fa-trash-o"></i>
+                    </a>
+                </div>
+
+                    <h3>
+                        <a href="{{ path('switchable_theme_instance_edit', {'instance':  theme.id}) }}">{{ theme.description }}</a>
+                        <small>{{ theme.theme }}</small>
+                    </h3>
+
+
+                <div class="clearfix"></div>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

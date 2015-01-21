@@ -8,13 +8,14 @@
 
 namespace ScayTrase\SwitchableThemeBundle\Command;
 
+use Exception;
+use ScayTrase\SwitchableThemeBundle\Service\CompilableThemeInterface;
+use ScayTrase\SwitchableThemeBundle\Service\ConfigurableThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ThemeRegistry;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Exception\IOException;
-use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * GenerateCommand
@@ -46,6 +47,7 @@ class GenerateCommand extends ContainerAwareCommand
         $this
             ->setName('scaytrase:themes:generate')
             ->setDescription('Install assets for themes');
+
     }
 
     /**
@@ -53,6 +55,7 @@ class GenerateCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $output->setDecorated(true);
         $this->executeGenerateBootstrap($input, $output);
     }
 
@@ -62,55 +65,56 @@ class GenerateCommand extends ContainerAwareCommand
         $theme_registry = $this->getContainer()->get('scaytrase.theme_registry');
         /** @var ThemeInterface[] $themes */
         $themes = $theme_registry->all();
-
+        $manager = $this->getContainer()->get('doctrine.orm.entity_manager');
         foreach ($themes as $theme) {
+            if ($theme instanceof CompilableThemeInterface) {
+                if ($theme instanceof ConfigurableThemeInterface) {
+                    $output->writeln(
+                        sprintf('<info>Generating theme "<comment>%s</comment>"</info>', $theme->getDescription())
+                    );
 
-            // In the template for bootstrap.less we need the path where Bootstraps .less files are stored and the path
-            // to the variables.less file.
-            // Absolute path do not work in LESSs import statement, we have to calculate the relative ones
+                    $configurations = $manager->getRepository('SwitchableThemeBundle:ThemeInstance')->findBy(
+                        array('theme' => $theme->getType())
+                    );
 
-            $fs = new Filesystem;
+                    if (empty($configurations)) {
+                        $output->writeln('<warning>NO CONFIGURATIONS FOUND</warning>');
+                        continue;
+                    }
 
-            try {
-                $fs->mkdir(dirname($theme->getOptions()['bootstrap_less_file']));
-            } catch (IOException $e) {
-                $output->writeln(
-                    sprintf(
-                        '<error>Could not create directory %s.</error>',
-                        dirname($theme->getOptions()['bootstrap_less_file'])
-                    )
-                );
+                    foreach ($configurations as $instance) {
+                        $output->write(
+                            sprintf(" - <info>Configuration <comment>%s</comment></info>", $instance->getDescription())
+                        );
+                        $theme->setConfiguration($instance->getConfig());
+                        try {
+                            $theme->compile($this->getContainer());
+                        } catch (Exception $exception) {
+                            $output->writeln(' [<error>FAIL</error>]');
+                            $output->writeln(sprintf('<error>%s</error>', $exception->getTraceAsString()));
+                            continue;
+                        }
 
-                return;
+                        $output->writeln(' [<info>DONE</info>]');
+                    }
+
+                } else {
+
+                    $output->write(
+                        sprintf('<info>Generating theme <comment>%s</comment></info>', $theme->getDescription())
+                    );
+                    try {
+                        $theme->compile($this->getContainer());
+                    } catch (Exception $exception) {
+                        $output->writeln(' [<error>FAIL</error>]');
+                        $output->writeln(sprintf('<error>%s</error>', $exception->getTraceAsString()));
+                        continue;
+                    }
+
+                    $output->writeln(' [<info>DONE</info>]');
+                }
             }
 
-            $assets_dir = $fs->makePathRelative(
-                realpath($theme->getOptions()['assets_dir']),
-                realpath(dirname($theme->getOptions()['bootstrap_less_file']))
-            );
-
-            $variablesDir = $fs->makePathRelative(
-                realpath(dirname($theme->getOptions()['variables_file'])),
-                realpath(dirname($theme->getOptions()['bootstrap_less_file']))
-            );
-
-            $variablesFile = sprintf(
-                '%s%s',
-                $variablesDir,
-                basename($theme->getOptions()['variables_file'])
-            );
-
-            // We can now use Twig to render the bootstrap.less file and save it
-            $content = $this->getContainer()->get('twig')->render(
-                $theme->getOptions()['bootstrap_template'],
-                array(
-                    'variables_dir' => $variablesDir,
-                    'variables_file' => $variablesFile,
-                    'assets_dir' => $assets_dir
-                )
-            );
-            file_put_contents($theme->getOptions()['bootstrap_less_file'], $content);
-            $output->writeln('Generating file ' . $theme->getOptions()['bootstrap_less_file']);
         }
     }
 }
