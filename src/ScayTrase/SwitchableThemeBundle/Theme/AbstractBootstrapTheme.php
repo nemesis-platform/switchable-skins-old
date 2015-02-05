@@ -16,7 +16,7 @@ use Twig_Environment;
 abstract class AbstractBootstrapTheme implements ThemeInterface, CompilableThemeInterface
 {
     /** @var  Twig_Environment */
-    private $twig;
+    protected $twig;
 
     function __construct(Twig_Environment $twig)
     {
@@ -31,11 +31,7 @@ abstract class AbstractBootstrapTheme implements ThemeInterface, CompilableTheme
 
     abstract protected function getBootstrapTemplate();
 
-    /**
-     * @return bool
-     */
-    public function compile()
-    {
+    protected function getCompilationOptions(){
         $fs = new Filesystem;
         $fs->mkdir(dirname($this->getBootstrapLessFile()));
 
@@ -55,13 +51,21 @@ abstract class AbstractBootstrapTheme implements ThemeInterface, CompilableTheme
             basename($this->getVariablesFile())
         );
 
+        return array(
+            'variables_dir' => $variablesDir,
+            'variables_file' => $variablesFile,
+            'assets_dir' => $assets_dir
+        );
+    }
+
+    /**
+     * @return bool
+     */
+    public function compile()
+    {
         $content = $this->twig->render(
             $this->getBootstrapTemplate(),
-            array(
-                'variables_dir' => $variablesDir,
-                'variables_file' => $variablesFile,
-                'assets_dir' => $assets_dir
-            )
+            $this->getCompilationOptions()
         );
 
         file_put_contents($this->getBootstrapLessFile(), $content);
