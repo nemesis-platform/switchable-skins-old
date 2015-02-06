@@ -6,6 +6,6 @@ services:
 
   scaytrase_switchablethemebundle.form.type.themeinstancetype:
     class: ScayTrase\SwitchableThemeBundle\Form\Type\ThemeInstanceType
-    arguments: [ @scaytrase.theme_registry, @service_container ]
+    arguments: [ @scaytrase.theme_registry, @form.factory ]
     tags:
     - { name: form.type, alias: switchable_theme_instance }
