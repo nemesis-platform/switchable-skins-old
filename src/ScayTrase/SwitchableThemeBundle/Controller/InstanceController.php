@@ -10,6 +10,8 @@ namespace ScayTrase\SwitchableThemeBundle\Controller;
 
 
 use ScayTrase\SwitchableThemeBundle\Entity\ThemeInstance;
+use ScayTrase\SwitchableThemeBundle\Service\CompilableThemeInterface;
+use ScayTrase\SwitchableThemeBundle\Service\ConfigurableThemeInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -77,6 +79,27 @@ class InstanceController extends Controller
     public function deleteAction(ThemeInstance $instance)
     {
         $this->getDoctrine()->getManager()->remove($instance);
+
+        return $this->redirectToRoute('switchable_theme_instance_list');
+    }
+
+    /**
+     * @param ThemeInstance $instance
+     *
+     * @Route("/{instance}/regenerate", name="switchable_theme_instance_regenerate")
+     * @return RedirectResponse
+     */
+    public function regenerateAction(ThemeInstance $instance)
+    {
+        $theme = $this->get('scaytrase.theme_registry')->get($instance->getTheme());
+
+        if ($theme instanceof ConfigurableThemeInterface) {
+            $theme->setConfiguration($instance->getConfig());
+        }
+
+        if ($theme instanceof CompilableThemeInterface) {
+            $theme->compile();
+        }
 
         return $this->redirectToRoute('switchable_theme_instance_list');
     }

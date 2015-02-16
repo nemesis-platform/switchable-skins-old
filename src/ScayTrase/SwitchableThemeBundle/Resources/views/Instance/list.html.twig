@@ -5,21 +5,30 @@
         {% for theme in themes %}
             <li class="list-group-item">
                 <div class="pull-right">
-                    <a class="btn btn-default">
+                    <a class="btn btn-default"
+                       href="{{ path('switchable_theme_instance_clone', {'instance':  theme.id}) }}">
                         <i class="fa fa-copy"></i>
                     </a>
-                    <a class="btn btn-primary">
+                    <a class="btn btn-primary"
+                       href="{{ path('switchable_theme_instance_edit', {'instance':  theme.id}) }}">
                         <i class="fa fa-edit"></i>
                     </a>
-                    <a class="btn btn-danger">
+                    <a class="btn btn-danger"
+                       href="{{ path('switchable_theme_instance_delete', {'instance':  theme.id}) }}">
                         <i class="fa fa-trash-o"></i>
+                    </a>
+                    <a class="btn btn-success"
+                       href="{{ path('switchable_theme_instance_regenerate', {'instance':  theme.id}) }}">
+                        <i class="fa fa-refresh"></i>
                     </a>
                 </div>
 
-                    <h3>
-                        <a href="{{ path('switchable_theme_instance_edit', {'instance':  theme.id}) }}">{{ theme.description }}</a>
-                        <small>{{ theme.theme }}</small>
-                    </h3>
+                <h3>
+                    <a href="{{ path('switchable_theme_instance_edit', {'instance':  theme.id}) }}">
+                        {{ theme.description }}
+                    </a>
+                    <small>{{ theme.theme }}</small>
+                </h3>
 
 
                 <div class="clearfix"></div>

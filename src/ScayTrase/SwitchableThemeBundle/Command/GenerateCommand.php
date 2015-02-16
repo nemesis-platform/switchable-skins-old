@@ -88,7 +88,7 @@ class GenerateCommand extends ContainerAwareCommand
                         );
                         $theme->setConfiguration($instance->getConfig());
                         try {
-                            $theme->compile($this->getContainer());
+                            $theme->compile();
                         } catch (Exception $exception) {
                             $output->writeln(' [<error>FAIL</error>]');
                             $output->writeln(sprintf('<error>%s</error>', $exception->getTraceAsString()));
@@ -104,7 +104,7 @@ class GenerateCommand extends ContainerAwareCommand
                         sprintf('<info>Generating theme <comment>%s</comment></info>', $theme->getDescription())
                     );
                     try {
-                        $theme->compile($this->getContainer());
+                        $theme->compile();
                     } catch (Exception $exception) {
                         $output->writeln(' [<error>FAIL</error>]');
                         $output->writeln(sprintf('<error>%s</error>', $exception->getTraceAsString()));
