@@ -73,7 +73,6 @@ class InstanceController extends Controller
      * @param ThemeInstance $instance
      *
      * @Route("/{instance}/delete", name="switchable_theme_instance_delete")
-     * @Template()
      * @return RedirectResponse
      */
     public function deleteAction(ThemeInstance $instance)
