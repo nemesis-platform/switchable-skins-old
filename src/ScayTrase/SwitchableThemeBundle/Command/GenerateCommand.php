@@ -1,14 +1,13 @@
 <?php
 
 /**
- * This file is part of BraincraftedBootstrapBundle.
- *
- * (c) 2012-2013 by Florian Eckerstorfer
+ * Based on BraincraftedBootstrapBundle generator command ((c) 2012-2013 by Florian Eckerstorfer)
  */
 
 namespace ScayTrase\SwitchableThemeBundle\Command;
 
 use Exception;
+use ScayTrase\SwitchableThemeBundle\Entity\ThemeInstance;
 use ScayTrase\SwitchableThemeBundle\Service\CompilableThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ConfigurableThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ThemeInterface;
@@ -17,26 +16,8 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * GenerateCommand
- *
- * @package    BraincraftedBootstrapBundle
- * @subpackage Command
- * @author     Florian Eckerstorfer <florian@eckerstorfer.co>
- * @copyright  2012-2013 Florian Eckerstorfer
- * @license    http://opensource.org/licenses/MIT The MIT License
- * @link       http://bootstrap.braincrafted.com BraincraftedBootstrapBundle
- */
 class GenerateCommand extends ContainerAwareCommand
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function __construct($name = null)
-    {
-        parent::__construct($name);
-    }
-
     /**
      * {@inheritDoc}
      *
@@ -46,7 +27,7 @@ class GenerateCommand extends ContainerAwareCommand
     {
         $this
             ->setName('scaytrase:themes:generate')
-            ->setDescription('Install assets for themes');
+            ->setDescription('Compile custom themes to end assets');
 
     }
 
@@ -63,55 +44,56 @@ class GenerateCommand extends ContainerAwareCommand
     {
         /** @var ThemeRegistry $theme_registry */
         $theme_registry = $this->getContainer()->get('scaytrase.theme_registry');
-        /** @var ThemeInterface[] $themes */
-        $themes = $theme_registry->all();
+        /** @var ThemeInterface[]|CompilableThemeInterface[]|ConfigurableThemeInterface[] $themes */
+        $themes  = $theme_registry->all();
         $manager = $this->getContainer()->get('doctrine.orm.entity_manager');
         foreach ($themes as $theme) {
+
+            $output->write(
+                sprintf('<info>Generating theme <comment>%s</comment></info>', $theme->getType())
+            );
+
             if ($theme instanceof CompilableThemeInterface) {
                 if ($theme instanceof ConfigurableThemeInterface) {
                     $output->writeln(
                         sprintf('<info>Generating theme "<comment>%s</comment>"</info>', $theme->getDescription())
                     );
 
+                    /** @var ThemeInterface|CompilableThemeInterface|ConfigurableThemeInterface $theme */
+                    /** @var ThemeInstance[] $configurations */
                     $configurations = $manager->getRepository('SwitchableThemeBundle:ThemeInstance')->findBy(
                         array('theme' => $theme->getType())
                     );
 
-                    if (empty($configurations)) {
-                        $output->writeln('<warning>NO CONFIGURATIONS FOUND</warning>');
+                    if (count($configurations) === 0) {
+                        $output->writeln('<comment>NO CONFIGURATIONS FOUND</comment>');
                         continue;
                     }
 
                     foreach ($configurations as $instance) {
                         $output->write(
-                            sprintf(" - <info>Configuration <comment>%s</comment></info>", $instance->getDescription())
+                            sprintf(' - <info>Configuration <comment>%s</comment></info>', $instance->getDescription())
                         );
-                        $theme->setConfiguration($instance->getConfig());
                         try {
+                            $theme->setConfiguration($instance->getConfig());
                             $theme->compile();
+                            $output->writeln(' [<info>DONE</info>]');
                         } catch (Exception $exception) {
                             $output->writeln(' [<error>FAIL</error>]');
                             $output->writeln(sprintf('<error>%s</error>', $exception->getTraceAsString()));
                             continue;
                         }
-
-                        $output->writeln(' [<info>DONE</info>]');
                     }
 
                 } else {
-
-                    $output->write(
-                        sprintf('<info>Generating theme <comment>%s</comment></info>', $theme->getDescription())
-                    );
                     try {
                         $theme->compile();
+                        $output->writeln(' [<info>DONE</info>]');
                     } catch (Exception $exception) {
                         $output->writeln(' [<error>FAIL</error>]');
                         $output->writeln(sprintf('<error>%s</error>', $exception->getTraceAsString()));
                         continue;
                     }
-
-                    $output->writeln(' [<info>DONE</info>]');
                 }
             }
 

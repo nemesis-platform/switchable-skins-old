@@ -4,7 +4,7 @@ services:
     tags:
     - {name: autoregistry, tag: theme }
 
-  scaytrase_switchablethemebundle.form.type.themeinstancetype:
+  scaytrase.switchable_theme.theme_instance_type:
     class: ScayTrase\SwitchableThemeBundle\Form\Type\ThemeInstanceType
     arguments: [ @scaytrase.theme_registry, @form.factory ]
     tags:

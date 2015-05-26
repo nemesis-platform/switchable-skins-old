@@ -29,7 +29,7 @@ class ThemeInstanceType extends AbstractType
     function __construct(ThemeRegistry $registry, FormFactoryInterface $factory)
     {
         $this->registry = $registry;
-        $this->factory = $factory;
+        $this->factory  = $factory;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -43,7 +43,7 @@ class ThemeInstanceType extends AbstractType
                 /** @var ThemeInstance $instance */
                 $instance = $event->getData();
 
-                $themes = $this->registry->all();
+                $themes  = $this->registry->all();
                 $choices = array_combine(
                     array_keys($themes),
                     array_map(

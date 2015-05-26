@@ -8,10 +8,9 @@
 
 namespace ScayTrase\SwitchableThemeBundle\Service;
 
+use ScayTrase\Core\Registry\TypedObjectInterface;
 
-use ScayTrase\AutoRegistryBundle\Service\RegistryElementInterface;
-
-interface ThemeInterface extends RegistryElementInterface
+interface ThemeInterface extends TypedObjectInterface
 {
     /**
      * @param string $layout
@@ -19,6 +18,7 @@ interface ThemeInterface extends RegistryElementInterface
      * @return string
      */
     public function get($layout = 'base');
+
     /** @return string[] */
     public function all();
 }
