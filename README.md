@@ -18,7 +18,7 @@ Current version supports theme configuration, so themes can be preconfigured (an
 
 ### Commons
 
-To use theme swich you should simply extend a template name, returned by ``` ThemeRegistry::getTemplate(theme,layout) ``` method. This method returns a string representing really extended template (i.e. ```SomeTheme::some_layout.html.twig```) or null
+To use theme switch you should simply extend a template name, returned by ``` ThemeRegistry::getTemplate(theme,layout) ``` method. This method returns a string representing really extended template (i.e. ```SomeTheme::some_layout.html.twig```) or null
 
 ```twig
 {# YourBundle::base.twig.html #}
