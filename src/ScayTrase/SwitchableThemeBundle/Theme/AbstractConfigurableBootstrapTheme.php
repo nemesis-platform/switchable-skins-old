@@ -17,7 +17,8 @@ abstract class AbstractConfigurableBootstrapTheme extends AbstractBootstrapTheme
         return array_merge_recursive(
             parent::getCompilationOptions(),
             array(
-                'configuration' => $this->getConfiguration()
-            ));
+                'configuration' => $this->getConfiguration(),
+            )
+        );
     }
 }

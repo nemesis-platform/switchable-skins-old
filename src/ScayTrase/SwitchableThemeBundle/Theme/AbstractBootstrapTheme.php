@@ -18,7 +18,7 @@ abstract class AbstractBootstrapTheme implements ThemeInterface, CompilableTheme
     /** @var  Twig_Environment */
     protected $twig;
 
-    function __construct(Twig_Environment $twig)
+    public function __construct(Twig_Environment $twig)
     {
         $this->twig = $twig;
     }
@@ -31,7 +31,8 @@ abstract class AbstractBootstrapTheme implements ThemeInterface, CompilableTheme
 
     abstract protected function getBootstrapTemplate();
 
-    protected function getCompilationOptions(){
+    protected function getCompilationOptions()
+    {
         $fs = new Filesystem;
         $fs->mkdir(dirname($this->getBootstrapLessFile()));
 
@@ -52,9 +53,9 @@ abstract class AbstractBootstrapTheme implements ThemeInterface, CompilableTheme
         );
 
         return array(
-            'variables_dir' => $variablesDir,
+            'variables_dir'  => $variablesDir,
             'variables_file' => $variablesFile,
-            'assets_dir' => $assets_dir
+            'assets_dir'     => $assets_dir,
         );
     }
 

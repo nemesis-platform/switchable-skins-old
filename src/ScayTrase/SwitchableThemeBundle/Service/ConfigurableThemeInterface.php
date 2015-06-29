@@ -9,14 +9,14 @@
 namespace ScayTrase\SwitchableThemeBundle\Service;
 
 
-use Symfony\Component\Form\FormBuilderInterface;
+use ScayTrase\Core\Form\FormTypedInterface;
 
 /**
  * Interface ConfigurableThemeInterface
  *
  * @package ScayTrase\SwitchableThemeBundle\Service
  */
-interface ConfigurableThemeInterface
+interface ConfigurableThemeInterface extends FormTypedInterface
 {
     /**
      * @return mixed
@@ -31,10 +31,7 @@ interface ConfigurableThemeInterface
     public function setConfiguration($config);
 
     /**
-     * @param array                $options
-     * @param FormBuilderInterface $builder
-     *
-     * @return FormBuilderInterface
+     * @inheritdoc
      */
-    public function buildForm(FormBuilderInterface $builder, array $options = array());
+    public function getFormType();
 }

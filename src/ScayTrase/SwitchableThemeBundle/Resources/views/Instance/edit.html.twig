@@ -6,7 +6,7 @@
     <h1>
         {{ "switchable_themes.edit" | trans | capitalize }}
         <small>
-            {{ theme_registry.get(instance.theme).description }}
+            {{ theme_registry.get(instance.theme).type }}
         </small>
     </h1>
 {% endblock %}

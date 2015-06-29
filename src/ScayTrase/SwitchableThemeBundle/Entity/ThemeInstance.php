@@ -24,7 +24,7 @@ class ThemeInstance
      */
     public function getAssetsKey()
     {
-        return $this->theme . '_i' . $this->id;
+        return $this->theme.'_i'.$this->id;
     }
 
     /**
