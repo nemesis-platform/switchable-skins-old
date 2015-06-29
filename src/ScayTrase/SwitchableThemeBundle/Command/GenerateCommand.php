@@ -45,7 +45,7 @@ class GenerateCommand extends ContainerAwareCommand
         /** @var ThemeRegistry $theme_registry */
         $theme_registry = $this->getContainer()->get('scaytrase.theme_registry');
         /** @var ThemeInterface[]|CompilableThemeInterface[]|ConfigurableThemeInterface[] $themes */
-        $themes  = $theme_registry->all();
+        $themes = $theme_registry->all();
         $manager = $this->getContainer()->get('doctrine.orm.entity_manager');
         foreach ($themes as $theme) {
 
@@ -55,6 +55,7 @@ class GenerateCommand extends ContainerAwareCommand
 
             if ($theme instanceof CompilableThemeInterface) {
                 if ($theme instanceof ConfigurableThemeInterface) {
+                    $output->writeln('');
                     $output->writeln(
                         sprintf('<info>Generating theme "<comment>%s</comment>"</info>', $theme->getDescription())
                     );
@@ -67,33 +68,36 @@ class GenerateCommand extends ContainerAwareCommand
 
                     if (count($configurations) === 0) {
                         $output->writeln('<comment>NO CONFIGURATIONS FOUND</comment>');
-                        continue;
-                    }
-
-                    foreach ($configurations as $instance) {
-                        $output->write(
-                            sprintf(' - <info>Configuration <comment>%s</comment></info>', $instance->getDescription())
-                        );
-                        try {
-                            $theme->setConfiguration($instance->getConfig());
-                            $theme->compile();
-                            $output->writeln(' [<info>DONE</info>]');
-                        } catch (Exception $exception) {
-                            $output->writeln(' [<error>FAIL</error>]');
-                            $output->writeln(sprintf('<error>%s</error>', $exception->getTraceAsString()));
-                            continue;
+                    } else {
+                        foreach ($configurations as $instance) {
+                            $output->write(
+                                sprintf(
+                                    ' - <info>Configuration <comment>%s</comment></info>',
+                                    $instance->getDescription()
+                                )
+                            );
+                            try {
+                                $theme->setConfiguration($instance->getConfig());
+                                $theme->compile();
+                                $output->writeln(' [<info>DONE</info>]');
+                            } catch (Exception $exception) {
+                                $output->writeln(' [<error>FAIL</error>]');
+                                $output->writeln(sprintf('<error>%s</error>', $exception->getTraceAsString()));
+                                continue;
+                            }
                         }
                     }
 
-                } else {
-                    try {
-                        $theme->compile();
-                        $output->writeln(' [<info>DONE</info>]');
-                    } catch (Exception $exception) {
-                        $output->writeln(' [<error>FAIL</error>]');
-                        $output->writeln(sprintf('<error>%s</error>', $exception->getTraceAsString()));
-                        continue;
-                    }
+                }
+
+                try {
+                    $theme->compile();
+                    $output->writeln(' [<info>DONE</info>]');
+                } catch (Exception $exception) {
+                    $output->writeln(' [<error>FAIL</error>]');
+                    $output->writeln(sprintf('<error>%s</error>', $exception->getMessage()));
+                    $output->writeln(sprintf('<error>%s</error>', $exception->getTraceAsString()));
+                    continue;
                 }
             }
 
