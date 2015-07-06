@@ -8,28 +8,19 @@
 
 namespace ScayTrase\SwitchableThemeBundle\Form\Type;
 
-use ScayTrase\Core\Form\FormInjectorInterface;
-use ScayTrase\Core\Form\FormTypedInterface;
-use ScayTrase\SwitchableThemeBundle\Entity\ThemeInstance;
 use ScayTrase\SwitchableThemeBundle\Service\ThemeRegistry;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class ThemeInstanceType extends AbstractType
 {
     /** @var  ThemeRegistry */
     private $registry;
-    /** @var  FormFactoryInterface */
-    private $factory;
 
-    function __construct(ThemeRegistry $registry, FormFactoryInterface $factory)
+    function __construct(ThemeRegistry $registry)
     {
         $this->registry = $registry;
-        $this->factory  = $factory;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
