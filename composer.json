@@ -19,7 +19,8 @@
     "doctrine/orm": "~2.2,>=2.2.3",
     "doctrine/doctrine-bundle": "~1.2",
     "sensio/framework-extra-bundle": "~3.0",
-    "scaytrase/symfony-autoregistry": "~2.0"
+    "scaytrase/symfony-autoregistry": "~2.0",
+    "symfony/assetic-bundle": "dev-master"
   },
   "autoload": {
     "psr-0": {

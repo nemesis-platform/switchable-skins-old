@@ -8,9 +8,9 @@
 
 namespace ScayTrase\SwitchableThemeBundle\Form\Type;
 
+use ScayTrase\Core\Form\FormInjectorInterface;
+use ScayTrase\Core\Form\FormTypedInterface;
 use ScayTrase\SwitchableThemeBundle\Entity\ThemeInstance;
-use ScayTrase\SwitchableThemeBundle\Service\ConfigurableThemeInterface;
-use ScayTrase\SwitchableThemeBundle\Service\ThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ThemeRegistry;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -36,54 +36,16 @@ class ThemeInstanceType extends AbstractType
     {
         $builder->add('description', 'text');
 
-        $builder->addEventListener(
-            FormEvents::PRE_SET_DATA,
-            function (FormEvent $event) {
-                $form = $event->getForm();
-                /** @var ThemeInstance $instance */
-                $instance = $event->getData();
-
-                $themes  = $this->registry->all();
-                $choices = array_combine(
-                    array_keys($themes),
-                    array_map(
-                        function (ThemeInterface $theme) {
-                            return $theme->getDescription();
-                        },
-                        $themes
-                    )
-                );
-
-                if ($instance && $instance->getId()) {
-                    $form->add(
-                        'theme',
-                        'choice',
-                        array('choices' => $choices, 'read_only' => true, 'disabled' => true)
-                    );
-                    $theme = $this->registry->get($instance->getTheme());
-                    if ($theme instanceof ConfigurableThemeInterface) {
-                        $form->add(
-                            $theme->buildForm(
-
-                                $this->factory->createNamedBuilder(
-                                    'config',
-                                    'form',
-                                    $instance->getConfig(),
-                                    array('auto_initialize' => false)
-                                )
-                            )->getForm()
-                        );
-                    }
-                } else {
-                    $form->add(
-                        'theme',
-                        'choice',
-                        array('choices' => $choices)
-                    );
-                }
-            }
+        $themes  = $this->registry->all();
+        $choices = array_combine(
+            array_keys($themes),
+            array_keys($themes)
         );
-
+        $builder->add(
+            'theme',
+            'choice',
+            array('choices' => $choices)
+        );
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)

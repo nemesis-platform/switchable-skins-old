@@ -9,6 +9,8 @@
 namespace ScayTrase\SwitchableThemeBundle\Controller;
 
 
+use ScayTrase\Core\Form\FormInjectorInterface;
+use ScayTrase\Core\Form\FormTypedInterface;
 use ScayTrase\SwitchableThemeBundle\Entity\ThemeInstance;
 use ScayTrase\SwitchableThemeBundle\Service\CompilableThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ConfigurableThemeInterface;
@@ -113,8 +115,45 @@ class InstanceController extends Controller
      */
     public function editAction(Request $request, ThemeInstance $instance)
     {
-        $form = $this->createForm('switchable_theme_instance', $instance)
+        $form = $this
+            ->createForm('switchable_theme_instance', $instance)
             ->add('submit', 'submit');
+
+        $form->handleRequest($request);
+        if ($form->isValid()) {
+            $this->getDoctrine()->getManager()->flush();
+
+            return $this->redirectToRoute('switchable_theme_instance_edit', array('instance' => $instance->getId()));
+        }
+
+        return array('form' => $form->createView(), 'instance' => $instance);
+    }
+
+    /**
+     * @param Request       $request
+     * @param ThemeInstance $instance
+     * @Route("/{instance}/configure", name="switchable_theme_instance_configure")
+     * @Template()
+     *
+     * @return Response
+     */
+    public function configureAction(Request $request, ThemeInstance $instance)
+    {
+        $builder = $this->createFormBuilder($instance);
+
+        $theme = $this->get('scaytrase.theme_registry')->get($instance->getTheme());
+
+        $config = $builder->create('config');
+        if ($theme instanceof FormTypedInterface) {
+            $config->add($theme->getFormType());
+        }
+        if ($theme instanceof FormInjectorInterface) {
+            $theme->injectForm($config);
+        }
+
+        $builder->add($config);
+
+        $form = $builder->getForm();
 
         $form->handleRequest($request);
         if ($form->isValid()) {
