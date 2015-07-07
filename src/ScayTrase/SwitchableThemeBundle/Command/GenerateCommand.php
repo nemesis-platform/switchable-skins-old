@@ -13,6 +13,7 @@ use ScayTrase\SwitchableThemeBundle\Service\ConfigurableThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ThemeRegistry;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -37,6 +38,8 @@ class GenerateCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->setDecorated(true);
+        $style = new OutputFormatterStyle('red');
+        $output->getFormatter()->setStyle('stacktrace', $style);
         $this->executeGenerateBootstrap($input, $output);
     }
 
@@ -49,16 +52,12 @@ class GenerateCommand extends ContainerAwareCommand
         $manager = $this->getContainer()->get('doctrine.orm.entity_manager');
         foreach ($themes as $theme) {
 
-            $output->write(
+            $output->writeln(
                 sprintf('<info>Generating theme <comment>%s</comment></info>', $theme->getType())
             );
 
             if ($theme instanceof CompilableThemeInterface) {
                 if ($theme instanceof ConfigurableThemeInterface) {
-                    $output->writeln('');
-                    $output->writeln(
-                        sprintf('<info>Generating theme "<comment>%s</comment>"</info>', $theme->getDescription())
-                    );
 
                     /** @var ThemeInterface|CompilableThemeInterface|ConfigurableThemeInterface $theme */
                     /** @var ThemeInstance[] $configurations */
@@ -67,12 +66,12 @@ class GenerateCommand extends ContainerAwareCommand
                     );
 
                     if (count($configurations) === 0) {
-                        $output->writeln('<comment>NO CONFIGURATIONS FOUND</comment>');
+                        $output->writeln(' <comment>No stored configurations found</comment>');
                     } else {
                         foreach ($configurations as $instance) {
                             $output->write(
                                 sprintf(
-                                    ' - <info>Configuration <comment>%s</comment></info>',
+                                    ' - <info>Configuration <comment>%s</comment></info> ',
                                     $instance->getDescription()
                                 )
                             );
@@ -81,8 +80,11 @@ class GenerateCommand extends ContainerAwareCommand
                                 $theme->compile();
                                 $output->writeln(' [<info>DONE</info>]');
                             } catch (Exception $exception) {
-                                $output->writeln(' [<error>FAIL</error>]');
-                                $output->writeln(sprintf('<error>%s</error>', $exception->getTraceAsString()));
+                                $output->write(' [<stacktrace>FAIL</stacktrace>] ');
+                                $output->writeln(sprintf('<stacktrace>%s</stacktrace>', $exception->getMessage()));
+                                if ($output->getVerbosity() > OutputInterface::VERBOSITY_VERBOSE) {
+                                    $output->writeln(sprintf('<stacktrace>%s</stacktrace>', $exception->getTraceAsString()));
+                                }
                                 continue;
                             }
                         }
@@ -91,12 +93,15 @@ class GenerateCommand extends ContainerAwareCommand
                 }
 
                 try {
+                    $output->write(' [<info>Generating zeroconf configuration</info>] ');
                     $theme->compile();
                     $output->writeln(' [<info>DONE</info>]');
                 } catch (Exception $exception) {
-                    $output->writeln(' [<error>FAIL</error>]');
-                    $output->writeln(sprintf('<error>%s</error>', $exception->getMessage()));
-                    $output->writeln(sprintf('<error>%s</error>', $exception->getTraceAsString()));
+                    $output->write(' [<stacktrace>FAIL</stacktrace>] ');
+                    $output->writeln(sprintf('<stacktrace>%s</stacktrace>', $exception->getMessage()));
+                    if ($output->getVerbosity() > OutputInterface::VERBOSITY_VERBOSE) {
+                        $output->writeln(sprintf('<stacktrace>%s</stacktrace>', $exception->getTraceAsString()));
+                    }
                     continue;
                 }
             }
