@@ -54,6 +54,8 @@ To use theme switch in case you are not shure, that template exists you can use 
 {% extends [theme_registry.template('my_theme','base'), 'MyBundle::fallback.html.twig'] %}
 ```
 
+The main idea is that 'my_theme' and 'base' strings could be replaced with variables populated from DB or user session. This allows you to dynamically select parent template for given conditions
+
 ### Configurable themes
 
 To use theme with theme configurations (theme instances) you should provide ```ThemeInstance``` object for the first argument to getTemplate. Configurable themes should implement `ConfigurableThemeInterface` to be able to be configured.
