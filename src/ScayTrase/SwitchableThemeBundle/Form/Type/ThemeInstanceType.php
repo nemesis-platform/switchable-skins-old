@@ -18,7 +18,7 @@ class ThemeInstanceType extends AbstractType
     /** @var  ThemeRegistry */
     private $registry;
 
-    function __construct(ThemeRegistry $registry)
+    public function __construct(ThemeRegistry $registry)
     {
         $this->registry = $registry;
     }

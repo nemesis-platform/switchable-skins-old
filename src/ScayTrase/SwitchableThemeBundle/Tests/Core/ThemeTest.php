@@ -28,11 +28,11 @@ class ThemeTest extends WebTestCase
         $container->get('scaytrase.theme_registry')->add($theme);
         self::assertEquals(
             'TEST BASE TEMPLATE',
-            $container->get('twig')->render('test.html.twig', ['theme' => 'test', 'layout' => 'base'])
+            $container->get('twig')->render('test.html.twig', array('theme' => 'test', 'layout' => 'base'))
         );
         self::assertEquals(
             'TEST EXTENDED TEMPLATE',
-            $container->get('twig')->render('test.html.twig', ['theme' => 'test', 'layout' => 'extended'])
+            $container->get('twig')->render('test.html.twig', array('theme' => 'test', 'layout' => 'extended'))
         );
     }
 }
