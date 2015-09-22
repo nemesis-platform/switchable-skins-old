@@ -1,5 +1,8 @@
 # scaytrase/symfony-switchable-theme
 
+Runtime choosing for Twig `{% extends %}` clause
+--
+
 [![Packagist](https://img.shields.io/packagist/dd/scaytrase/symfony-switchable-theme.svg)]()
 [![Packagist](https://img.shields.io/packagist/dm/scaytrase/symfony-switchable-theme.svg)]()
 [![Packagist](https://img.shields.io/packagist/dt/scaytrase/symfony-switchable-theme.svg)]()
@@ -16,13 +19,30 @@ Current version supports theme configuration, so themes can be preconfigured (an
 
 ## Usage
 
+### Basic example
+
+See [tests](src/ScayTrase/SwitchableThemeBundle/Tests/Core/ThemeTest.php) for basic usage example.  You can find simple `ThemeInterface` implementation and logic example.
+
 ### Commons
 
 To use theme switch you should simply extend a template name, returned by ``` ThemeRegistry::getTemplate(theme,layout) ``` method. This method returns a string representing really extended template (i.e. ```SomeTheme::some_layout.html.twig```) or null
 
+```php
+class MyTheme implements ThemeInterface {
+    public function get($layout = 'base') {return 'MyBundle:MyTheme:base.html.twig';}
+    public function all() {return array('base' => 'MyBundle:MyTheme:base.html.twig');}
+    public function getType() {return 'my_theme';}
+}
+```
+
 ```twig
-{# YourBundle::base.twig.html #}
-{% extends theme_registry.template('theme_identifier','layout') %}
+{# MyBundle:MyTheme:base.html.twig #}
+Here your theme basic template goes.
+```
+
+```twig
+{# MyBundle::base.twig.html #}
+{% extends theme_registry.template('my_theme','base') %}
 ```
 
 ### Fallback layout
@@ -30,8 +50,8 @@ To use theme switch you should simply extend a template name, returned by ``` Th
 To use theme switch in case you are not shure, that template exists you can use multi-extends twig clause and supply it with fallback template, i.e.
 
 ```twig
-{# YourBundle::base.twig.html #}
-{% extends [theme_registry.template('theme_identifier','layout'), 'YourBundle::fallback.html.twig'] %}
+{# MyBundle::base.twig.html #}
+{% extends [theme_registry.template('my_theme','base'), 'MyBundle::fallback.html.twig'] %}
 ```
 
 ### Configurable themes
@@ -39,6 +59,10 @@ To use theme switch in case you are not shure, that template exists you can use 
 To use theme with theme configurations (theme instances) you should provide ```ThemeInstance``` object for the first argument to getTemplate
 
 ```twig
-{# YourBundle::base.twig.html #}
+{# MyBundle::base.twig.html #}
 {% extends theme_registry.template(themeInstance,'layout') %}
 ```
+
+### Compilable themes
+
+**TBD**
