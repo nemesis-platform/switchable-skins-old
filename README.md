@@ -56,7 +56,7 @@ To use theme switch in case you are not shure, that template exists you can use 
 
 ### Configurable themes
 
-To use theme with theme configurations (theme instances) you should provide ```ThemeInstance``` object for the first argument to getTemplate
+To use theme with theme configurations (theme instances) you should provide ```ThemeInstance``` object for the first argument to getTemplate. Configurable themes should implement `ConfigurableThemeInterface` to be able to be configured.
 
 ```twig
 {# MyBundle::base.twig.html #}
@@ -65,4 +65,8 @@ To use theme with theme configurations (theme instances) you should provide ```T
 
 ### Compilable themes
 
-**TBD**
+Some themes should be processed before they can be used. For example, some theme assets should be compiled. To handle theese situations `CompilableThemeInterface` was created. Theme can be compiled by calling `CompilableThemeInterface::compile()` method. This way is best used with configurable interface, so you can compile different configurations of single theme.
+
+As quick example there is an [abstract base class](src/ScayTrase/Themes/Bootstrap/Core/AbstractConfigurableBootstrapTheme.php)  for creating Bootstrap 3.0 based theme. You could implement the accessing methods which points the class to the bootstrap less template, vendor assets, etc and results in correctly compiled `bootstrap.css` on  `CompilableThemeInterface::compile()` call.
+
+Theme compilation method based on bootstrap compilation workflow from [braincrafted/bootstrap-bundle](https://github.com/braincrafted/bootstrap-bundle)
