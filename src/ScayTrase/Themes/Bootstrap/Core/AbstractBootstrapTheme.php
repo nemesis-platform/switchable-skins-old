@@ -6,7 +6,7 @@
  * Time: 15:31
  */
 
-namespace ScayTrase\SwitchableThemeBundle\Theme;
+namespace ScayTrase\Themes\Bootstrap\Core;
 
 use ScayTrase\SwitchableThemeBundle\Service\CompilableThemeInterface;
 use ScayTrase\SwitchableThemeBundle\Service\ThemeInterface;

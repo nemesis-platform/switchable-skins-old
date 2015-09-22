@@ -8,15 +8,12 @@
 
 namespace ScayTrase\SwitchableThemeBundle\Service;
 
-
-use ScayTrase\Core\Form\FormTypedInterface;
-
 /**
  * Interface ConfigurableThemeInterface
  *
  * @package ScayTrase\SwitchableThemeBundle\Service
  */
-interface ConfigurableThemeInterface extends FormTypedInterface
+interface ConfigurableThemeInterface
 {
     /**
      * @return mixed
@@ -29,9 +26,4 @@ interface ConfigurableThemeInterface extends FormTypedInterface
      * @return mixed
      */
     public function setConfiguration($config);
-
-    /**
-     * @inheritdoc
-     */
-    public function getFormType();
 }
