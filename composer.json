@@ -22,6 +22,10 @@
     "scaytrase/symfony-autoregistry": "~2.0",
     "symfony/assetic-bundle": "~2.6"
   },
+  "require-dev": {
+    "symfony/finder": "~2.3",
+    "scaytrase/symfony-test-utils": "dev-master"
+  },
   "autoload": {
     "psr-0": {
       "": "src/"
